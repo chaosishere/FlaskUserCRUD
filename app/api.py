@@ -15,8 +15,20 @@ user_update_schema = UserUpdateSchema()
 @api.route('/users', methods=['GET', 'POST'])
 def get_users():
     if request.method == 'GET':
-        users = userslist.find()
-        return jsonify([user_serializer(user) for user in users]), 200
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 10))
+        
+        skip = (page - 1) * per_page
+        total_users = userslist.count_documents({})
+        
+        users = userslist.find().skip(skip).limit(per_page)
+        
+        return jsonify({
+            'total_users': total_users,
+            'page': page,
+            'per_page': per_page,
+            'users': [user_serializer(user) for user in users]
+        }), 200   
     
     elif request.method == 'POST':
         data = request.get_json()
