@@ -1,15 +1,16 @@
 from flask import Flask
 from pymongo import MongoClient
+import os
 
 db = None
 
 def create_app():
     app = Flask(__name__)
 
-    client = MongoClient('mongodb+srv://shendgepratham4:jq5BucX1VcuI5yM1@crudapp.l3nsvv8.mongodb.net/?retryWrites=true&w=majority&appName=CrudApp')
+    client = MongoClient(os.getenv('MONGODB_URI', 'mongodb://mongo:27017'))
     
     global db
-    db = client.CrudApp
+    db = client[os.getenv('MONGODB_DB', 'CrudApp')]
 
     print(db)
 
